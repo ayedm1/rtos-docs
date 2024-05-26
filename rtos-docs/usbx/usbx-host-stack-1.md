@@ -17,9 +17,9 @@ comprised of three layers.
 - Stack layer
 - Class layer
 
-The relationship between the USB layers is as follows.
+The relationship between the USB layers is as follows:
 
-![USB Layers](./media/usbx-device-stack/usb-layers.png)
+![USB layers](./media/usbx-device-stack/usb-layers.png)
 
 ## Product Highlights
 
@@ -31,8 +31,8 @@ The relationship between the USB layers is as follows.
 - Multiple host controller support
 - Multiple class support
 - Multiple class instances
-- Integration of classes with ThreadX, FileX and NetX
-- Support for USB devices with multiple configuration
+- Integration of classes with ThreadX, FileX and NetXDuo
+- Support for USB devices with multiple configurations
 - Support for USB composite devices
 - Support for cascading hubs
 - Support for USB power management

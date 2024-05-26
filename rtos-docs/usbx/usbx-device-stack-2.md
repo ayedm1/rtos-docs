@@ -69,45 +69,47 @@ There are several configuration options for building the USBX library. All optio
 
 The list below details each configuration option.
 
-| Configuration&nbsp;Option | Description |
-| --- | --- |
-| **UX_PERIODIC_RATE** | This value represents how many ticks per seconds for a specific hardware platform. The default is 1000 indicating 1 tick per millisecond. |
-| **UX_THREAD_STACK_SIZE** | This value is the size of the stack in bytes for the USBX threads. It can be typically 1024 bytes or 2048 bytes depending on the processor used and the host controller. |
-| **UX_THREAD_PRIORITY_ENUM** | This is the ThreadX priority value for the USBX enumeration threads that monitors the bus topology. |
-| **UX_THREAD_PRIORITY_CLASS** | This is the ThreadX priority value for the standard USBX threads. |
-| **UX_THREAD_PRIORITY_KEYBOARD** | This is the ThreadX priority value for the USBX HID keyboard class. |
-| **UX_THREAD_PRIORITY_DCD** | This is the ThreadX priority value for the device controller thread. |
-| **UX_NO_TIME_SLICE** | This value actually defines the time slice that will be used for threads. For example, if defined to 0, the ThreadX target port does not use time slices. |
-| **UX_MAX_SLAVE_CLASS_DRIVER** | This is the maximum number of USBX classes that can be registered via ux_device_stack_class_register. |
-| **UX_MAX_SLAVE_LUN** | This value represents the current number of SCSI logical units represented in the device storage class driver. |
-| **UX_SLAVE_CLASS_STORAGE_INCLUDE_MMC** | If defined, the storage class will handle Multi-Media Commands (MMC) that is, DVD-ROM. |
-| **UX_DEVICE_CLASS_CDC_ECM_NX_PKPOOL_ENTRIES** | This value represents the number of NetX packets in the CDC-ECM class' packet pool. The default is 16. |
-| **UX_SLAVE_REQUEST_CONTROL_MAX_LENGTH** | This value represents the maximum number of bytes received on a control endpoint in the device stack. The default is 256 bytes but can be reduced in memory constraint environments. |
-| **UX_DEVICE_CLASS_HID_EVENT_BUFFER_LENGTH** | This value represents the maximum length in bytes of a HID report. |
-| **UX_DEVICE_CLASS_HID_MAX_EVENTS_QUEUE** | This value represents the maximum number of HID reports that can be queued at once. |
-| **UX_SLAVE_REQUEST_DATA_MAX_LENGTH** | This value represents the maximum number of bytes received on a bulk endpoint in the device stack. The default is 4096 bytes but can be reduced in memory constraint environments. |
-| **UX_DEVICE_BIDIRECTIONAL_ENDPOINT_SUPPORT** | If defined, the device side enables bi-directional-endpoints support, e.g., endpoints addressed 0x01 and 0x81. Otherwise (the default case), endpoint number must be unique in same configuration. Note the feature must be used with compatible DCD and peripheral.  |
+|              Configuration&nbsp;Option                | Description |
+| ----------------------------------------------------  | ---------------------------------------------------- |
+| **UX_DEVICE_SIDE_ONLY**                               | This value will only enable the device side of usbx. |
+| **UX_ENABLE_ASSERT**                                  | This macro enables the assert checks inside usbx. |
+| **UX_ENABLE_ERROR_CHECKING**                          | This option enables the basic USBX error checking. This define is typically used when the application is debugging and removed after the application is fully debugged.                    |
+| **UX_STANDALONE**                                     | This macro will enable the standalone mode of usb. |
+| **UX_DEBUG_LOG_SIZE**                                 | This value represents the size of the log pool. |
+| **UX_ENFORCE_SAFE_ALIGNMENT**                         | This macro forces the memory allocation scheme to enforce alignment of memory with the UX_SAFE_ALIGN field. |
+| **UX_PERIODIC_RATE**                                  | This value represents how many ticks per seconds for a specific hardware platform. The default is 1000 indicating 1 tick per millisecond. |
+| **UX_THREAD_STACK_SIZE**                                  | This value represents USBX Generic Thread Stack Size. |
+| **UX_MAX_SLAVE_CLASS_DRIVER**                         | This value represents the maximum number of classes in the device stack that can be loaded by USBX. |
+| **UX_MAX_SLAVE_INTERFACES**                           | This value represents the maximum number of interfaces in the device framework. |
+| **UX_SLAVE_REQUEST_CONTROL_MAX_LENGTH**               | This value represents the maximum number of bytes received on a control endpoint in the device stack. The default is 256 bytes but can be reduced in memory constrained environments. |
+| **UX_SLAVE_REQUEST_DATA_MAX_LENGTH**                  | This value represents the maximum number of bytes that can be received or transmitted on any endpoint. This value cannot be less than the maximum packet size of any endpoint. The default    is 4096 bytes but can be reduced in memory constrained environments. For cd-rom support in the storage class, this value cannot be less than 2048. |
+| **UX_DEVICE_BIDIRECTIONAL_ENDPOINT_SUPPORT**          | If defined, the device side enables bi-directional-endpoints support, e.g., endpoints addressed 0x01 and 0x81. Otherwise (the default case), endpoint number must be unique in same configuration. Note the feature must be used with compatible DCD and peripheral.  |
+| **UX_DEVICE_ALTERNATE_SETTING_SUPPORT_DISABLE**       | This macro disables interface alternate setting support.  |
+| **UX_DEVICE_INITIALIZE_FRAMEWORK_SCAN_DISABLE**       | This macro disables device framework scan, where max number of endpoints (except EP0) and max number of interfaces are calculated at runtime, as a base to allocate memory for  interfaces and endpoints structures and their buffers. Undefined, the following two macros must be defined to initialize memory structures. |
+| **UX_MAX_DEVICE_ENDPOINTS**                           | This macro Works if UX_DEVICE_INITIALIZE_FRAMEWORK_SCAN_DISABLE is defined. This value represents max number of endpoints (except EP0) activated at the same time. |
+| **UX_MAX_DEVICE_INTERFACES**                          | This macro Works if UX_DEVICE_INITIALIZE_FRAMEWORK_SCAN_DISABLE is defined. This value represents max number of interfaces activated at the same time. |
+| **UX_DEVICE_ENABLE_GET_STRING_WITH_ZERO_LANGUAGE_ID** | This macro enables processing of Get String Descriptor requests with zero Language ID. The first language ID in the language ID framework will be used if the request has a zero Language ID. |
 
 ## Source Code Tree
 
 The USBX files are provided in several directories.
 
-![Source Code Tree](media/usbx-device-stack/source-code-tree.png)
+![Source Code Tree](./media/usbx-device-stack/source-code-tree.png)
 
 In order to make the files recognizable by their names, the following convention has been adopted:
 
 | File Suffix Name  | File description                          |
 | ----------------- | ----------------------------------------- |
-| ux_host_stack   | usbx host stack core files                |
-| ux_host_class   | usbx host stack classes files             |
-| ux_hcd           | usbx host stack controller driver files   |
-| ux_device_stack | usbx device stack core files              |
-| ux_device_class | usbx device stack classes files           |
-| ux_dcd           | usbx device stack controller driver files |
-| ux_otg           | usbx otg controller driver related files  |
-| ux_pictbridge    | usbx pictbridge files                     |
-| ux_utility       | usbx utility functions                    |
-| demo_usbx        | demonstration files for USBX              |
+| ux_host_stack     | usbx host stack core files                |
+| ux_host_class     | usbx host stack classes files             |
+| ux_hcd            | usbx host stack controller driver files   |
+| ux_device_stack   | usbx device stack core files              |
+| ux_device_class   | usbx device stack classes files           |
+| ux_dcd            | usbx device stack controller driver files |
+| ux_otg            | usbx otg controller driver related files  |
+| ux_pictbridge     | usbx pictbridge files                     |
+| ux_utility        | usbx utility functions                    |
+| demo_usbx         | demonstration files for USBX              |
 
 ## Initialization of USBX resources
 
@@ -117,16 +119,16 @@ The following function initializes USBX memory resources with 128 K of regular m
 
 ```c
 /* Initialize USBX Memory */
-ux_system_initialize(memory_pointer,(128*1024),UX_NULL,0);
+ux_system_initialize(memory_pointer,(128*1024), UX_NULL, 0);
 ```
 
 The prototype for the ux_system_initialize is as follows:
 
 ```c
 UINT ux_system_initialize(VOID *regular_memory_pool_start,
-        ULONG regular_memory_size,
-        VOID *cache_safe_memory_pool_start,
-        ULONG cache_safe_memory_size);
+                          ULONG regular_memory_size,
+                          VOID *cache_safe_memory_pool_start,
+                          ULONG cache_safe_memory_size);
 ```
 
 Input parameters:
@@ -147,9 +149,8 @@ In a system where the regular memory is not cache safe and a controller requires
 USBX can be terminated by releasing its resources. Prior to terminating usbx, all classes and controller resources need to be terminated properly. The following function uninitializes USBX memory resources:
 
 ```c
-/* Unitialize USBX Resources */
-
-ux_system_uninitialize();
+    /* Un-initialize USBX Resources */
+    ux_system_uninitialize();
 ```
 
 The prototype for the ux_system_initialize is as follows:

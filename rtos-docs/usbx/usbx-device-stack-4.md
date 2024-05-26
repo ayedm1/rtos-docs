@@ -5,7 +5,21 @@ description: Learn about the USBX Device Services.
 
 # Description of USBX Device Services
 
-### ux_device_stack_alternate_setting_get
+- ux_device_stack_alternate_setting_get
+- ux_device_stack_alternate_setting_set
+- ux_device_stack_class_register
+- ux_device_stack_class_unregister
+- ux_device_stack_configuration_get
+- ux_device_stack_descriptor_send
+- ux_device_stack_disconnect
+- ux_device_stack_endpoint_stall
+- ux_device_stack_host_wakeup
+- ux_device_stack_initialize
+- ux_device_stack_interface_delete
+- ux_device_stack_interface_start
+- ux_device_stack_transfer_abort
+ 
+## ux_device_stack_alternate_setting_get
 
 Get current alternate setting for an interface value
 
@@ -40,16 +54,15 @@ status = ux_device_stack_alternate_setting_get(interface_value);
 /* If status equals UX_SUCCESS, the operation was successful. */
 ```
 
-### ux_device_stack_alternate_setting_set
+## ux_device_stack_alternate_setting_set
 
 Set current alternate setting for an interface value
 
 ### Prototype
 
 ```c
-UINT ux_device_stack_alternate_setting_set(
-    ULONG interface_value, 
-    ULONG alternate_setting_value);
+UINT ux_device_stack_alternate_setting_set(ULONG interface_value, 
+                                           ULONG alternate_setting_value);
 ```
 
 ### Description
@@ -76,7 +89,6 @@ The function starts status stage of the control transfer in background, and retu
 
 ```c
 ULONG interface_value;
-
 ULONG alternate_setting_value;
 
 /* The following example illustrates this service. */
@@ -85,19 +97,20 @@ status = ux_device_stack_alternate_setting_set(interface_value, alternate_settin
 /* If status equals UX_SUCCESS, the operation was successful. */
 ```
 
-### ux_device_stack_class_register
+## ux_device_stack_class_register
 
 Register a new USB device class
 
 ### Prototype
 
 ```c
-UINT ux_device_stack_class_register(
-    UCHAR *class_name,
-    UINT (*class_entry_function)(struct UX_SLAVE_CLASS_COMMAND_STRUCT *),
-    ULONG configuration_number, 
-    ULONG interface_number,  
-    VOID *parameter);
+
+/* Register a new USB device class */ 
+UINT ux_device_stack_class_register(UCHAR *class_name,
+                                    UINT (*class_entry_function)(struct UX_SLAVE_CLASS_COMMAND_STRUCT *),
+                                    ULONG configuration_number, 
+                                    ULONG interface_number,  
+                                    VOID *parameter);
 ```
 
 ### Description
@@ -124,17 +137,18 @@ Some classes expect a parameter or parameter list. For instance, the device stor
 
 ### Example
 
+The following example illustrates this service.
+
 ```c
 UINT status;
 
-/* The following example illustrates this service. */
-
 /* Initialize the device storage class. The class is connected with interface 1 */
-status = ux_device_stack_class_register(_ux_system_slave_class_storage_name ux_device_class_storage_entry,
-    1, 1, (VOID *)&parameter);
+status = ux_device_stack_class_register(_ux_system_slave_class_storage_name,
+                                        ux_device_class_storage_entry,
+                                        1, 1, (VOID *)&parameter);
 ```
 
-### ux_device_stack_class_unregister
+## ux_device_stack_class_unregister
 
 Unregister a USB device class
 
@@ -167,16 +181,18 @@ length of it (without the NULL-terminator itself) must be no larger than **UX_MA
 
 ### Example
 
-```c
-/* The following example illustrates this service. */
+The following example illustrates this service.
 
-/* Unitialize the device storage class. */
-status = ux_device_stack_class_unregister(_ux_system_slave_class_storage_name, ux_device_class_storage_entry);
+```c
+    /* Un-initialize the device storage class. */
+    status = ux_device_stack_class_unregister(_ux_system_slave_class_storage_name,
+ux_device_class_storage_entry);
 
 /* If status equals UX_SUCCESS, the operation was successful. */
+
 ```
 
-### ux_device_stack_configuration_get
+## ux_device_stack_configuration_get
 
 Get the current configuration
 
@@ -245,7 +261,7 @@ status = ux_device_stack_configuration_set(configuration_value);
 /* If status equals UX_SUCCESS, the operation was successful. */
 ```
 
-### ux_device_stack_descriptor_send
+## ux_device_stack_descriptor_send
 
 Send a descriptor to the host
 
@@ -294,7 +310,7 @@ status = ux_device_stack_descriptor_send(descriptor_type, request_index, host_le
 /* If status equals UX_SUCCESS, the operation was successful. */
 ```
 
-### ux_device_stack_disconnect
+## ux_device_stack_disconnect
 
 Disconnect device stack
 
@@ -327,7 +343,7 @@ status = ux_device_stack_disconnect();
 /* If status equals UX_SUCCESS, the operation was successful. */
 ```
 
-### ux_device_stack_endpoint_stall
+## ux_device_stack_endpoint_stall
 
 Request endpoint Stall condition
 
@@ -363,7 +379,7 @@ status = ux_device_stack_endpoint_stall(endpoint);
 /* If status equals UX_SUCCESS, the operation was successful. */
 ```
 
-### ux_device_stack_host_wakeup
+## ux_device_stack_host_wakeup
 
 Wake up the host
 
@@ -400,7 +416,7 @@ status = ux_device_stack_host_wakeup();
 /* If status equals UX_SUCCESS, the operation was successful. */
 ```
 
-### ux_device_stack_initialize
+## ux_device_stack_initialize
 
 Initialize USB device stack
 
@@ -541,16 +557,16 @@ UINT status;
 
 /* The code below is required for installing the device portion of USBX. 
     There is no call back for device status change in this example. */
-status = ux_device_stack_initialize(&device_framework_high_speed,
-    DEVICE_FRAMEWORK_LENGTH_HIGH_SPEED, &device_framework_full_speed,
-    DEVICE_FRAMEWORK_LENGTH_FULL_SPEED, &string_framework,
-    STRING_FRAMEWORK_LENGTH, &language_id_framework,
-    LANGUAGE_ID_FRAMEWORK_LENGTH, UX_NULL);
+status = ux_device_stack_initialize(&device_framework_high_speed, DEVICE_FRAMEWORK_LENGTH_HIGH_SPEED,
+                                    &device_framework_full_speed, DEVICE_FRAMEWORK_LENGTH_FULL_SPEED,
+                                    &string_framework, STRING_FRAMEWORK_LENGTH, 
+                                    &language_id_framework, LANGUAGE_ID_FRAMEWORK_LENGTH,
+                                    UX_NULL);
 
 /* If status equals UX_SUCCESS, initialization was successful. */
 ```
 
-### ux_device_stack_interface_delete
+## ux_device_stack_interface_delete
 
 Delete a stack interface
 
@@ -574,13 +590,15 @@ This function is called when an interface should be removed. An interface is eit
 
 ### Example
 
+The following example illustrates this service.
+
 ```c
 UINT status;
 
-/* The following example illustrates this service. */
-status = ux_device_stack_interface_delete(interface);
+    /* Delete interface */
+    status = ux_device_stack_interface_delete(interface);
 
-/* If status equals UX_SUCCESS, the operation was successful. */
+    /* If status equals UX_SUCCESS, the operation was successful. */
 ```
 
 ### ux_device_stack_interface_get
@@ -666,7 +684,7 @@ status = ux_device_stack_interface_set(device_framework,
 /* If status equals UX_SUCCESS, the operation was successful. */
 ```
 
-### ux_device_stack_interface_start
+## ux_device_stack_interface_start
 
 Start search for a class to own an interface instance
 
@@ -766,7 +784,7 @@ while(total_length) {
 }
 ```
 
-### ux_device_stack_transfer_abort
+## ux_device_stack_transfer_abort
 
 Cancel a transfer request
 
@@ -815,7 +833,7 @@ UINT ux_device_stack_uninitialize();
 
 ### Description
 
-This function is called when an application needs to unitialize the USBX device stack – all device stack resources are freed, and return immediately. This should be called after all classes have been unregistered via ux_device_stack_class_unregister.
+This function is called when an application needs to Uninitialize the USBX device stack – all device stack resources are freed, and return immediately. This should be called after all classes have been unregistered via ux_device_stack_class_unregister.
 
 ### Parameters
 

@@ -394,17 +394,17 @@ The CDC-ACM class also uses a union functional descriptor which performs the sam
 The initialization of the CDC-ACM class expects the following parameters.
 
 ```c
+UX_SLAVE_CLASS_CDC_ACM_PARAMETER    cdc_acm_parameter;
+
 /* Set the parameters for callback when insertion/extraction of a CDC device. */
-
-parameter.ux_slave_class_cdc_acm_instance_activate = tx_demo_cdc_instance_activate;
-
-parameter.ux_slave_class_cdc_acm_instance_deactivate = tx_demo_cdc_instance_deactivate;
-
-parameter.ux_slave_class_cdc_acm_parameter_change = tx_demo_cdc_instance_parameter_change;
+cdc_acm_parameter.ux_slave_class_cdc_acm_instance_activate = demo_cdc_instance_activate;
+cdc_acm_parameter.ux_slave_class_cdc_acm_instance_deactivate = demo_cdc_instance_deactivate;
+cdc_acm_parameter.ux_slave_class_cdc_acm_parameter_change = demo_cdc_instance_parameter_change;
 
 /* Initialize the device cdc class. This class owns both interfaces starting with 0. */
-status = ux_device_stack_class_register(_ux_system_slave_class_cdc_acm_name,ux_device_class_cdc_acm_entry,
-    1,0, &parameter);
+status = ux_device_stack_class_register(_ux_system_slave_class_cdc_acm_name,
+                                        ux_device_class_cdc_acm_entry,
+                                        1,0, &cdc_acm_parameter);
 ```
 
 The 2 parameters defined are callback pointers into the user applications that will be called when the stack activates or deactivate this class.
@@ -1068,6 +1068,8 @@ The MAC address string descriptor is used by the CDC-ECM class to reply to the h
 The initialization of the CDC-ECM class is as follows.
 
 ```c
+UX_SLAVE_CLASS_CDC_ECM_PARAMETER    cdc_ecm_parameter;
+
 /* Set the parameters for callback when insertion/extraction of a CDC device. Set to NULL.*/
 cdc_ecm_parameter.ux_slave_class_cdc_ecm_instance_activate = UX_NULL;
 cdc_ecm_parameter.ux_slave_class_cdc_ecm_instance_deactivate = UX_NULL;
@@ -1090,7 +1092,8 @@ cdc_ecm_parameter.ux_slave_class_cdc_ecm_parameter_remote_node_id[5] = 0x79;
 
 /* Initialize the device cdc_ecm class. */
 status = ux_device_stack_class_register(_ux_system_slave_class_cdc_ecm_name,
-    ux_device_class_cdc_ecm_entry, 1,0,&cdc_ecm_parameter);
+                                        ux_device_class_cdc_ecm_entry,
+                                        1,0,&cdc_ecm_parameter);
 ```
 
 The initialization of this class expects the same function callback for activation and deactivation, although here as an exercise they are set to NULL so that no callback is performed.
@@ -1151,14 +1154,14 @@ The initialization of the HID class is as follow, using a USB keyboard as an exa
 /* Initialize the hid class parameters for a keyboard. */
 hid_parameter.ux_device_class_hid_parameter_report_address = hid_keyboard_report;
 hid_parameter.ux_device_class_hid_parameter_report_length = HID_KEYBOARD_REPORT_LENGTH;
-hid_parameter.ux_device_class_hid_parameter_callback = tx_demo_thread_hid_callback;
-hid_parameter.ux_device_class_hid_parameter_get_callback = tx_demo_thread_hid_get_callback;
+hid_parameter.ux_device_class_hid_parameter_callback = demo_thread_hid_callback;
+hid_parameter.ux_device_class_hid_parameter_get_callback = demo_thread_hid_get_callback;
 hid_parameter.ux_device_class_hid_parameter_report_id = 0;
 
 /* Initialize the device hid class. The class is connected with interface 0 */
-
 status = ux_device_stack_class_register(_ux_system_slave_class_hid_name,
-    ux_device_class_hid_entry, 1,0,(VOID *)&hid_parameter);
+                                        ux_device_class_hid_entry, 
+                                        1,0,(VOID *)&hid_parameter);
 if (status!=UX_SUCCESS)
     return;
 ```
@@ -1186,29 +1189,28 @@ The HID class can send data back to the host on the interrupt endpoint by using 
 
 Setting an event to the HID class
 
-### Prototype
+#### Prototype
 
 ```c
-UINT ux_device_class_hid_event_set( 
-    UX_SLAVE_CLASS_HID *hid,
-    UX_SLAVE_CLASS_HID_EVENT *hid_event);
+UINT ux_device_class_hid_event_set(UX_SLAVE_CLASS_HID *hid,
+                                   UX_SLAVE_CLASS_HID_EVENT *hid_event);
 ```
 
-### Description
+#### Description
 
 This function is called when an application needs to send a HID event back to the host. The function is not blocking, it merely puts the report into a circular queue and returns to the application.
 
-### Parameters
+#### Parameters
 
 - **hid**: Pointer to the hid class instance.
 - **hid_event**: Pointer to structure of the hid event.
 
-### Return Value
+#### Return Value
 
 - **UX_SUCCESS** (0x00) This operation was successful.
 - **UX_ERROR** (0xFF) Error no space available in circular queue.
 
-### Example
+#### Example
 
 ```c
 /* Insert a key into the keyboard event. Length is fixed to 8. */
@@ -1233,7 +1235,7 @@ The callback defined at the initialization of the HID class performs the opposit
 
 Notify that an event is from host through control SET_REPORT request
 
-### Prototype
+#### Prototype
 
 ```c
 UINT hid_callback(
@@ -1241,16 +1243,16 @@ UINT hid_callback(
     UX_SLAVE_CLASS_HID_EVENT *hid_event);
 ```
 
-### Description
+#### Description
 
 This function is called when the host sends a HID SET_REPORT to the application.
 
-### Parameters
+#### Parameters
 
 - **hid**: Pointer to the hid class instance.
 - **hid_event**: Pointer to structure of the hid event.
 
-### Example
+#### Example
 
 The following example shows how to interpret an event for a HID keyboard:
 
@@ -1279,7 +1281,7 @@ UINT tx_demo_thread_hid_callback(UX_SLAVE_CLASS_HID *hid, UX_SLAVE_CLASS_HID_EVE
 
 Notify that a host is requesting event through control GET_REPORT request
 
-### Prototype
+#### Prototype
 
 ```c
 UINT hid_get_callback(
@@ -1287,18 +1289,18 @@ UINT hid_get_callback(
     UX_SLAVE_CLASS_HID_EVENT *hid_event);
 ```
 
-### Description
+#### Description
 
 This function is invoked when host is requesting event through control GET_REPORT
 request, application must fill event structure in the callback, the data size must
 not exceed the event length and the max event buffer size.
 
-### Parameters
+#### Parameters
 
 - **hid**: Pointer to the hid class instance.
 - **hid_event**: Pointer to structure of the hid event.
 
-### Example
+#### Example
 
 The following example shows how to prepare an event:
 
